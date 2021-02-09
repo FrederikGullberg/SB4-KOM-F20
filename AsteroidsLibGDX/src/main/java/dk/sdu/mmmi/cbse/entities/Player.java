@@ -5,18 +5,22 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import dk.sdu.mmmi.cbse.main.Game;
 
+import java.util.ArrayList;
+
 public class Player extends SpaceObject {
-	
+	private ArrayList<Bullet> bullets;
+	private final int MAX_BULLETS= 5;
 	private boolean left;
 	private boolean right;
 	private boolean up;
+	private boolean space;
 	
 	private float maxSpeed;
 	private float acceleration;
 	private float deceleration;
 	
-	public Player() {
-		
+	public Player(ArrayList<Bullet> bullets) {
+		this.bullets = bullets;
 		x = Game.WIDTH / 2;
 		y = Game.HEIGHT / 2;
 		
@@ -31,7 +35,12 @@ public class Player extends SpaceObject {
 		rotationSpeed = 3;
 		
 	}
-	
+
+	public void shoot() {
+		if(bullets.size() == MAX_BULLETS) return;
+		bullets.add(new Bullet(x,y, radians));
+	}
+
 	private void setShape() {
 		shapex[0] = x + MathUtils.cos(radians) * 8;
 		shapey[0] = y + MathUtils.sin(radians) * 8;
@@ -49,9 +58,14 @@ public class Player extends SpaceObject {
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
 	public void setUp(boolean b) { up = b; }
-	
+	public void setShoot(boolean b) { space = b; }
+
+	double delay = 0f;
 	public void update(float dt) {
-		
+		if(space && delay <= System.currentTimeMillis()){
+			delay = System.currentTimeMillis() + 200;
+			shoot();
+		}
 		// turning
 		if(left) {
 			radians += rotationSpeed * dt;
